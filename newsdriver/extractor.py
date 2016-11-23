@@ -55,6 +55,10 @@ class ExtractorGetUrlList(Extractor):
         super(ExtractorGetUrlList, self).__init__(extractor_id)
 
     def get(self):
+        """
+        Call the Extractor API to return the URLs associated with an extractor
+        :return:  array of str
+        """
         api = ExtractorGet(extractor_id=self._extractor_id)
 
         extractor = api.get()
@@ -69,7 +73,7 @@ class ExtractorGetUrlList(Extractor):
             'accept-encoding': "gzip",
             'cache-control': "no-cache",
         }
-
+        logger.debug("url: ".format(url))
         response = requests.request("GET", url, headers=headers, params=querystring)
 
         logger.debug(response.text)

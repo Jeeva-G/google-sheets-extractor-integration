@@ -51,3 +51,11 @@ class TestExtractorGetUrList(TestCase):
         api = ExtractorGetUrlList(extractor_id=EXTRACTOR_ID)
         urls = api.get()
         self.assertEquals(10, len(urls))
+
+    def test_get_url_list_values(self):
+        api = ExtractorGetUrlList(extractor_id=EXTRACTOR_ID)
+        urls = api.get()
+        print(urls)
+        for i in range(0, 10):
+            self.assertEquals("http://www.ikea.com/us/en/search/?query=chairs&pageNumber={0}".format(i+1),
+                              urls[i])
