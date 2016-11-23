@@ -85,9 +85,8 @@ class GoogleSheet(object):
         self._service = discovery.build('sheets', 'v4', http=http, discoveryServiceUrl=discovery_url)
 
     def get_urls(self):
-        range_name = 'Sheet1!$A:A'
         result = self._service.spreadsheets().values().get(spreadsheetId=self._spreadsheet_id,
-                                                           range=range_name).execute()
+                                                           range=self._range).execute()
         values = result.get('values', [])
         return values
 

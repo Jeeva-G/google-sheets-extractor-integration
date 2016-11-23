@@ -79,3 +79,30 @@ class ExtractorGetUrlList(Extractor):
         logger.debug(response.text)
         return response.text.split('\n')
 
+
+class ExtractorPutUrlList(Extractor):
+
+    def __init__(self, extractor_id):
+        super(ExtractorPutUrlList, self).__init__(extractor_id)
+
+    def put(self, urls):
+        """
+        Calls the Extractor API with a list of URLs to associate with an extractor
+        :param urls: array of str containing the URLs
+        :return: None
+        """
+        url = "https://store.import.io/store/extractor/{0}/_attachment/urlList".format(self._extractor_id)
+
+        querystring = {
+            "_apikey": self._api_key
+        }
+
+        headers = {
+            'content-type': "text/plain"
+        }
+
+        data = "\n".join(urls)
+
+        response = requests.request("PUT", url, data=data, headers=headers, params=querystring)
+
+

@@ -15,14 +15,14 @@
 #
 
 from unittest import TestCase
-from newsdriver.extractor import ExtractorGetUrlList
 from newsdriver.extractor import ExtractorGet
+from newsdriver.extractor import ExtractorGetUrlList
+from newsdriver.extractor import ExtractorPutUrlList
 
 EXTRACTOR_ID = '9dd8b560-70c1-43f1-902d-567ac2e2cf3f'
 
 
 class TestExtractorGet(TestCase):
-
     def test_constructor(self):
         api = ExtractorGet(extractor_id=EXTRACTOR_ID)
         e = api.get()
@@ -37,7 +37,6 @@ class TestExtractorGet(TestCase):
 
 
 class TestExtractorGetUrList(TestCase):
-
     def test_constructor(self):
         api = ExtractorGetUrlList(extractor_id=EXTRACTOR_ID)
         self.assertIsNotNone(api)
@@ -55,7 +54,29 @@ class TestExtractorGetUrList(TestCase):
     def test_get_url_list_values(self):
         api = ExtractorGetUrlList(extractor_id=EXTRACTOR_ID)
         urls = api.get()
-        print(urls)
         for i in range(0, 10):
-            self.assertEquals("http://www.ikea.com/us/en/search/?query=chairs&pageNumber={0}".format(i+1),
+            self.assertEquals("http://www.ikea.com/us/en/search/?query=chairs&pageNumber={0}".format(i + 1),
                               urls[i])
+
+
+class TestExtractorPutUrlList(TestCase):
+    def test_constructor(self):
+        api = ExtractorPutUrlList
+
+    def test_put_url_list(self):
+        api = ExtractorPutUrlList(extractor_id=EXTRACTOR_ID)
+        urls = [
+            'http://www.ikea.com/us/en/search/?query=chairs&pageNumber=1',
+            'http://www.ikea.com/us/en/search/?query=chairs&pageNumber=2',
+            'http://www.ikea.com/us/en/search/?query=chairs&pageNumber=3',
+            'http://www.ikea.com/us/en/search/?query=chairs&pageNumber=4',
+            'http://www.ikea.com/us/en/search/?query=chairs&pageNumber=5',
+            'http://www.ikea.com/us/en/search/?query=chairs&pageNumber=6',
+            'http://www.ikea.com/us/en/search/?query=chairs&pageNumber=7',
+            'http://www.ikea.com/us/en/search/?query=chairs&pageNumber=8',
+            'http://www.ikea.com/us/en/search/?query=chairs&pageNumber=9',
+            'http://www.ikea.com/us/en/search/?query=chairs&pageNumber=10'
+        ]
+
+        api.put(urls)
+

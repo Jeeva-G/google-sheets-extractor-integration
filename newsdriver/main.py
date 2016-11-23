@@ -89,7 +89,7 @@ class NewsDriver(object):
             print(url)
 
     def display_sheet_urls(self):
-        sheet = GoogleSheet(spreadsheet_id=self._sheet_id)
+        sheet = GoogleSheet(spreadsheet_id=self._sheet_id, range=self._range)
         sheet.initialize_service()
         urls = sheet.get_urls()
         for url in urls:
