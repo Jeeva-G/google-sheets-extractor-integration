@@ -1,0 +1,53 @@
+#
+# Copyright 2016 Import.io
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+#
+
+from unittest import TestCase
+from newsdriver.extractor import ExtractorGetUrlList
+from newsdriver.extractor import ExtractorGet
+
+EXTRACTOR_ID = '9dd8b560-70c1-43f1-902d-567ac2e2cf3f'
+
+
+class TestExtractorGet(TestCase):
+
+    def test_constructor(self):
+        api = ExtractorGet(extractor_id=EXTRACTOR_ID)
+        e = api.get()
+        self.assertIsNotNone(e)
+        self.assertEquals(EXTRACTOR_ID, e['guid'])
+
+    def test_get(self):
+        api = ExtractorGet(extractor_id=EXTRACTOR_ID)
+        e = api.get()
+        self.assertIsNotNone(e)
+        self.assertEquals(EXTRACTOR_ID, e['guid'])
+
+
+class TestExtractorGetUrList(TestCase):
+
+    def test_constructor(self):
+        api = ExtractorGetUrlList(extractor_id=EXTRACTOR_ID)
+        self.assertIsNotNone(api)
+
+    def test_get_url_list(self):
+        api = ExtractorGetUrlList(extractor_id=EXTRACTOR_ID)
+        urls = api.get()
+        self.assertIsNotNone(urls)
+
+    def test_get_url_list_count(self):
+        api = ExtractorGetUrlList(extractor_id=EXTRACTOR_ID)
+        urls = api.get()
+        self.assertEquals(10, len(urls))
