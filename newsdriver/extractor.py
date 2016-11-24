@@ -106,3 +106,45 @@ class ExtractorPutUrlList(Extractor):
         response = requests.request("PUT", url, data=data, headers=headers, params=querystring)
 
 
+class ExtractorStart(Extractor):
+
+    def __init__(self, extractor_id):
+        super(ExtractorStart, self).__init__(extractor_id)
+
+    def start(self):
+        pass
+
+
+class ExtractorStatus(Extractor):
+    """
+    Returns the status of extractor which is one of the following states:
+
+    1. CANCELED
+    2. FINISHED
+    3. STARTED
+
+    """
+
+    def __init__(self, extractor_id):
+        super(ExtractorStatus, self).__init__(extractor_id)
+
+    def get(self):
+        url = "https://store.import.io/store/extractor/_search"
+
+        querystring = {"_sort": "_meta.creationTimestamp",
+                       "_mine": "true",
+                       "q": "_missing_%3Aarchived%20OR%20archived%3Afalse",
+                       "_page": "1",
+                       "_apikey": self._api_key
+                       }
+
+        headers = {
+            'cache-control': "no-cache",
+        }
+
+        response = requests.request("GET", url, headers=headers, params=querystring)
+
+        print(response.text)
+
+
+

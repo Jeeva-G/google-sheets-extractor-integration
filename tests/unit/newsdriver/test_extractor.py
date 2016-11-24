@@ -18,6 +18,8 @@ from unittest import TestCase
 from newsdriver.extractor import ExtractorGet
 from newsdriver.extractor import ExtractorGetUrlList
 from newsdriver.extractor import ExtractorPutUrlList
+from newsdriver.extractor import ExtractorStart
+from newsdriver.extractor import ExtractorStatus
 
 EXTRACTOR_ID = '9dd8b560-70c1-43f1-902d-567ac2e2cf3f'
 
@@ -62,6 +64,7 @@ class TestExtractorGetUrList(TestCase):
 class TestExtractorPutUrlList(TestCase):
     def test_constructor(self):
         api = ExtractorPutUrlList
+        self.assertIsNotNone(api)
 
     def test_put_url_list(self):
         api = ExtractorPutUrlList(extractor_id=EXTRACTOR_ID)
@@ -80,3 +83,22 @@ class TestExtractorPutUrlList(TestCase):
 
         api.put(urls)
 
+
+class TestExtractorStart(TestCase):
+
+    def test_constructor(self):
+        api = ExtractorStart()
+        self.assertIsNotNone(api)
+
+    def test_extractor_start(self):
+        self.assertTrue(False)
+
+
+class TestExtractorStatus(TestCase):
+
+    def test_constructor(self):
+        api = ExtractorStatus()
+        self.assertIsNotNone(api)
+
+    def test_extractor_status(self):
+        self.assertTrue(False)

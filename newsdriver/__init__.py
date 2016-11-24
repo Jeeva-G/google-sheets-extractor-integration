@@ -18,3 +18,5 @@ from newsdriver.google import GoogleSheet
 from newsdriver.extractor import ExtractorGet
 from newsdriver.extractor import ExtractorGetUrlList
 from newsdriver.extractor import ExtractorPutUrlList
+from newsdriver.extractor import ExtractorStart
+from newsdriver.extractor import ExtractorStatus
