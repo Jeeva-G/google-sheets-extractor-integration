@@ -87,18 +87,27 @@ class TestExtractorPutUrlList(TestCase):
 class TestExtractorStart(TestCase):
 
     def test_constructor(self):
-        api = ExtractorStart()
+        api = ExtractorStart(extractor_id=EXTRACTOR_ID)
         self.assertIsNotNone(api)
 
     def test_extractor_start(self):
-        self.assertTrue(False)
+        api = ExtractorStart(extractor_id=EXTRACTOR_ID)
+        start = api.start()
+        self.assertIsNotNone(start)
+        self.assertEqual(36, len(start))
 
 
 class TestExtractorStatus(TestCase):
 
     def test_constructor(self):
-        api = ExtractorStatus()
+        api = ExtractorStatus(extractor_id=EXTRACTOR_ID)
         self.assertIsNotNone(api)
 
     def test_extractor_status(self):
-        self.assertTrue(False)
+        api = ExtractorStatus(extractor_id=EXTRACTOR_ID)
+        status = api.get()
+        self.assertIsNotNone(status)
+        self.assertEqual(10, status[0]['totalUrlCount'])
+        self.assertEqual(10, status[0]['successUrlCount'])
+        self.assertEqual(0, status[0]['failedUrlCount'])
+        self.assertEqual(250, status[0]['rowCount'])

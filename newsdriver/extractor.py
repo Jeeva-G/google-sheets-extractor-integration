@@ -16,24 +16,22 @@
 import requests
 import os
 import logging
+import json
 
 logger = logging.getLogger(__name__)
 
 
 class Extractor(object):
-
     def __init__(self, extractor_id):
         self._extractor_id = extractor_id
         self._api_key = os.environ['IMPORT_IO_API_KEY']
 
 
 class ExtractorGet(Extractor):
-
     def __init__(self, extractor_id):
         super(ExtractorGet, self).__init__(extractor_id)
 
     def get(self):
-
         url = "https://store.import.io/store/extractor/{0}".format(self._extractor_id)
 
         querystring = {
@@ -50,7 +48,6 @@ class ExtractorGet(Extractor):
 
 
 class ExtractorGetUrlList(Extractor):
-
     def __init__(self, extractor_id):
         super(ExtractorGetUrlList, self).__init__(extractor_id)
 
@@ -81,7 +78,6 @@ class ExtractorGetUrlList(Extractor):
 
 
 class ExtractorPutUrlList(Extractor):
-
     def __init__(self, extractor_id):
         super(ExtractorPutUrlList, self).__init__(extractor_id)
 
@@ -107,34 +103,45 @@ class ExtractorPutUrlList(Extractor):
 
 
 class ExtractorStart(Extractor):
+    """
+    Starts an Extractor running
+    """
 
     def __init__(self, extractor_id):
         super(ExtractorStart, self).__init__(extractor_id)
 
     def start(self):
-        pass
+        """
+        Initiate a crawl-run by an Extractor
+
+        :return:
+        """
+        url = "https://run.import.io/{0}/start".format(self._extractor_id)
+
+        querystring = {
+            "_apikey": self._api_key
+        }
+
+        headers = {
+            'cache-control': "no-cache",
+        }
+
+        response = requests.request("POST", url, headers=headers, params=querystring)
+        result = response.json()
+        return result['crawlRunId']
 
 
 class ExtractorStatus(Extractor):
-    """
-    Returns the status of extractor which is one of the following states:
-
-    1. CANCELED
-    2. FINISHED
-    3. STARTED
-
-    """
 
     def __init__(self, extractor_id):
         super(ExtractorStatus, self).__init__(extractor_id)
 
     def get(self):
-        url = "https://store.import.io/store/extractor/_search"
+        logging.basicConfig(level=logging.DEBUG)
+        url = "https://store.import.io/store/crawlrun/_search"
 
-        querystring = {"_sort": "_meta.creationTimestamp",
-                       "_mine": "true",
-                       "q": "_missing_%3Aarchived%20OR%20archived%3Afalse",
-                       "_page": "1",
+        querystring = {"_sort": "_meta.creationTimestamp", "_page": "1", "_perPage": "30",
+                       "extractorId": self._extractor_id,
                        "_apikey": self._api_key
                        }
 
@@ -143,8 +150,15 @@ class ExtractorStatus(Extractor):
         }
 
         response = requests.request("GET", url, headers=headers, params=querystring)
-
-        print(response.text)
-
-
-
+        results = response.json()
+        crawl_runs = []
+        for run in results['hits']['hits']:
+            r = {}
+            r['guid'] = run['fields']['guid']
+            r['state'] = run['fields']['state']
+            r['totalUrlCount'] = run['fields']['totalUrlCount']
+            r['successUrlCount'] = run['fields']['successUrlCount']
+            r['failedUrlCount'] = run['fields']['failedUrlCount']
+            r['rowCount'] = run['fields']['rowCount']
+            crawl_runs.append(r)
+        return crawl_runs
