@@ -88,5 +88,8 @@ class GoogleSheet(object):
         result = self._service.spreadsheets().values().get(spreadsheetId=self._spreadsheet_id,
                                                            range=self._range).execute()
         values = result.get('values', [])
-        return values
+        urls = []
+        for v in values:
+            urls.append(v[0])
+        return urls
 

@@ -97,6 +97,8 @@ class ExtractorPutUrlList(Extractor):
             'content-type': "text/plain"
         }
 
+        logger.debug("urls ({0}): {1}".format(type(urls), urls))
+
         data = "\n".join(urls)
 
         response = requests.request("PUT", url, data=data, headers=headers, params=querystring)

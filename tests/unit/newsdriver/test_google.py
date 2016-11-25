@@ -42,8 +42,8 @@ class TestGoogleSheet(TestCase):
         sheet = GoogleSheet(spreadsheet_id=SPREADSHEET_ID)
         sheet.initialize_service()
         urls = sheet.get_urls()
-        self.assertEquals('http://www.zipcodestogo.com/California/', urls[0][0])
-        self.assertEquals('http://www.zipcodestogo.com/Georgia/', urls[1][0])
-        self.assertEquals('http://www.zipcodestogo.com/Florida/', urls[2][0])
-        self.assertEquals('http://www.zipcodestogo.com/Utah/', urls[3][0])
+        self.assertEquals('http://www.zipcodestogo.com/California/', urls[0])
+        self.assertEquals('http://www.zipcodestogo.com/Georgia/', urls[1])
+        self.assertEquals('http://www.zipcodestogo.com/Florida/', urls[2])
+        self.assertEquals('http://www.zipcodestogo.com/Utah/', urls[3])
 
