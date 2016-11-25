@@ -13,7 +13,6 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 #
-import sys
 import argparse
 from newsdriver.version import __version__
 from newsdriver import GoogleSheet
@@ -52,7 +51,7 @@ class NewsDriver(object):
         self._spread_sheet_id = None
         self._range = None
 
-    def add_extractor_id_argument(self, parser):
+    def _add_extractor_id_argument(self, parser):
         """
         Add extractor id argument
         :param parser: Parser to add argument to
@@ -62,7 +61,7 @@ class NewsDriver(object):
                             dest="extractor_id", action='store', required=True,
                             help='Import.io extractor id or GUID')
 
-    def add_debug_argument(self, parser):
+    def _add_debug_argument(self, parser):
         """
         Add a debug argument to a parser
         :param parser: Parser to add argument to
@@ -71,7 +70,7 @@ class NewsDriver(object):
         parser.add_argument('-d', '--debug', dest="debug", action='store_true',
                             help="Enables debug logging")
 
-    def add_spread_sheet_id_argument(self, parser):
+    def _add_spread_sheet_id_argument(self, parser):
         """
         Add spread sheet id argument to a parser
         :param parser: Parser to add the argument to
@@ -80,7 +79,7 @@ class NewsDriver(object):
         parser.add_argument('-i', '--sheet-id', dest="spread_sheet_id", action='store', required=True,
                             help="Google spreadsheet identifier")
 
-    def add_range_argument(self, parser):
+    def _add_range_argument(self, parser):
         """
         Add spread sheet range to a parser
         :param parser:
@@ -89,7 +88,7 @@ class NewsDriver(object):
         parser.add_argument('-r', '--range', dest="range", action='store', required=False,
                             help="Range identifying the list of URLs")
 
-    def handle_arguments(self):
+    def _handle_arguments(self):
         """
         Processes the command line arguments for each of the sub-commands
         :return:
@@ -103,51 +102,51 @@ class NewsDriver(object):
         # COPY URLS
         #
         copy_urls = subparser.add_parser(CMD_COPY_URLS, help='Copies URLs from google sheet to an extractor')
-        self.add_debug_argument(copy_urls)
-        self.add_extractor_id_argument(copy_urls)
-        self.add_spread_sheet_id_argument(copy_urls)
-        self.add_range_argument(copy_urls)
+        self._add_debug_argument(copy_urls)
+        self._add_extractor_id_argument(copy_urls)
+        self._add_spread_sheet_id_argument(copy_urls)
+        self._add_range_argument(copy_urls)
         copy_urls.set_defaults(which=CMD_COPY_URLS)
 
         #
         # EXTRACTOR
         #
         extract = subparser.add_parser(CMD_EXTRACT, help='Runs the full extraction process')
-        self.add_debug_argument(extract)
-        self.add_extractor_id_argument(extract)
-        self.add_spread_sheet_id_argument(extract)
+        self._add_debug_argument(extract)
+        self._add_extractor_id_argument(extract)
+        self._add_spread_sheet_id_argument(extract)
         extract.set_defaults(which=CMD_EXTRACT)
 
         #
         # EXTRACTOR START
         #
         extractor_start = subparser.add_parser(CMD_EXTRACTOR_START, help='Starts an extractor')
-        self.add_debug_argument(extractor_start)
-        self.add_extractor_id_argument(extractor_start)
+        self._add_debug_argument(extractor_start)
+        self._add_extractor_id_argument(extractor_start)
         extractor_start.set_defaults(which=CMD_EXTRACTOR_START)
 
         #
         # Extractor Status
         #
         extractor_status = subparser.add_parser(CMD_EXTRACTOR_STATUS, help='Displays the status of recent craw runs')
-        self.add_debug_argument(extractor_status)
-        self.add_extractor_id_argument(extractor_status)
+        self._add_debug_argument(extractor_status)
+        self._add_extractor_id_argument(extractor_status)
         extractor_status.set_defaults(which=CMD_EXTRACTOR_STATUS)
 
         #
         # EXTRACTOR URLS
         #
         extractor_urls = subparser.add_parser('extractor-urls', help='Displays the URLs from an extractor')
-        self.add_debug_argument(extractor_urls)
-        self.add_extractor_id_argument(extractor_urls)
+        self._add_debug_argument(extractor_urls)
+        self._add_extractor_id_argument(extractor_urls)
         extractor_urls.set_defaults(which=CMD_EXTRACTOR_URLS)
 
         #
         # SHEET URLS
         #
         sheet_urls = subparser.add_parser(CMD_SHEET_URLS, help='Displays the URLs from a google sheet')
-        self.add_debug_argument(sheet_urls)
-        self.add_spread_sheet_id_argument(sheet_urls)
+        self._add_debug_argument(sheet_urls)
+        self._add_spread_sheet_id_argument(sheet_urls)
         sheet_urls.add_argument('-r', '--range', dest="range", action='store', required=False)
         sheet_urls.set_defaults(which=CMD_SHEET_URLS)
 
@@ -168,7 +167,7 @@ class NewsDriver(object):
         if 'debug' in args:
             self._debug = args.debug
 
-    def copy_urls(self):
+    def _copy_urls(self):
         """
         Copies URLs from a Google sheet to a Extractor URL list
         :return:
@@ -182,7 +181,7 @@ class NewsDriver(object):
         extractor = ExtractorPutUrlList(extractor_id=self._extractor_id)
         extractor.put(urls)
 
-    def extract(self):
+    def _extract(self):
         """
         Extracts the URLs from the specified Google Sheet and range, adds to the
         specified Extractor and then run the Extractor
@@ -191,10 +190,10 @@ class NewsDriver(object):
         logger.info("Pull URLs from Google Sheet: {0} from range: {1} to Extractor: {2} and run".format(
             self._spread_sheet_id, self._range, self._extractor_id))
 
-        self.copy_urls()
-        self.extractor_start()
+        self._copy_urls()
+        self._extractor_start()
 
-    def extractor_start(self):
+    def _extractor_start(self):
         """
         Stars an extractor craw run from the provide extractor id
         :return:
@@ -203,7 +202,7 @@ class NewsDriver(object):
         extractor = ExtractorStart(extractor_id=self._extractor_id)
         extractor.start()
 
-    def extractor_status(self):
+    def _extractor_status(self):
         """
         Displays the crawl runs of an extractor
         :return:
@@ -216,7 +215,7 @@ class NewsDriver(object):
                     s['guid'], s['state'], s['rowCount'], s['totalUrlCount'], s['successUrlCount'],
                 s['failedUrlCount']))
 
-    def extractor_urls(self):
+    def _extractor_urls(self):
         """
         Display the URLs associated with the given extractor
         :return: None
@@ -227,7 +226,7 @@ class NewsDriver(object):
         for url in urls:
             print(url)
 
-    def sheet_urls(self):
+    def _sheet_urls(self):
         """
         Display the URLs associated with the given Google Sheet and range
         :return:
@@ -240,7 +239,7 @@ class NewsDriver(object):
         for url in urls:
             print(url)
 
-    def dispatch_sub_command(self):
+    def _dispatch_sub_command(self):
         """
         Dispatch sub-command based on command line arguments
         :return:
@@ -252,25 +251,25 @@ class NewsDriver(object):
         logger.info("Running command: {0}".format(self._command))
 
         if self._command == CMD_COPY_URLS:
-            self.copy_urls()
+            self._copy_urls()
         elif self._command == CMD_EXTRACT:
-            self.extract()
+            self._extract()
         elif self._command == CMD_EXTRACTOR_START:
-            self.extractor_start()
+            self._extractor_start()
         elif self._command == CMD_EXTRACTOR_STATUS:
-            self.extractor_status()
+            self._extractor_status()
         elif self._command == CMD_EXTRACTOR_URLS:
-            self.extractor_urls()
+            self._extractor_urls()
         elif self._command == CMD_SHEET_URLS:
-            self.sheet_urls()
+            self._sheet_urls()
 
     def execute(self):
         """
         Execute the functionality of the command line utility
         :return: None
         """
-        self.handle_arguments()
-        self.dispatch_sub_command()
+        self._handle_arguments()
+        self._dispatch_sub_command()
 
 
 def main():
