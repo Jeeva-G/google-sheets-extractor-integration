@@ -199,7 +199,7 @@ class NewsDriver(object):
         Stars an extractor craw run from the provide extractor id
         :return:
         """
-        logger.info("Running extractor: {0}".format(self._extractor_id))
+        logger.info("Starting crawl run for extractor: {0}".format(self._extractor_id))
         extractor = ExtractorStart(extractor_id=self._extractor_id)
         extractor.start()
 
