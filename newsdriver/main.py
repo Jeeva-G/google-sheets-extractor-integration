@@ -49,7 +49,25 @@ class NewsDriver(object):
         self._command = None
         self._extractor_id = None
         self._spread_sheet_id = None
-        self._range = None
+        self._spread_sheet_range = None
+
+    def copy_urls(self, spread_sheet_id, spread_sheet_range, extractor_id):
+        pass
+
+    def extract(self, spread_sheet_id, spread_sheet_range, extractor_id):
+        pass
+
+    def extractor_start(self, extractor_id):
+        pass
+
+    def extractor_status(self, extractor_id):
+        pass
+
+    def extractor_urls(self, extractor_id):
+        pass
+
+    def sheet_urls(self, spread_sheet_id, spread_sheet_range):
+        pass
 
     def _add_extractor_id_argument(self, parser):
         """
@@ -162,7 +180,7 @@ class NewsDriver(object):
             self._spread_sheet_id = args.spread_sheet_id
 
         if 'range' in args:
-            self._range = args.range
+            self._spread_sheet_range = args.range
 
         if 'debug' in args:
             self._debug = args.debug
@@ -173,8 +191,8 @@ class NewsDriver(object):
         :return:
         """
         logger.info("Copy URLs from Google Sheet: {0} from range: {1} to Extractor: {2}".format(
-            self._spread_sheet_id, self._range, self._extractor_id))
-        sheet = GoogleSheet(spreadsheet_id=self._spread_sheet_id, range=self._range)
+            self._spread_sheet_id, self._spread_sheet_range, self._extractor_id))
+        sheet = GoogleSheet(spreadsheet_id=self._spread_sheet_id, range=self._spread_sheet_range)
         sheet.initialize_service()
         urls = sheet.get_urls()
         logger.debug("sheet-urls ({0}): {1}".format(type(urls), urls))
@@ -188,7 +206,7 @@ class NewsDriver(object):
         :return:
         """
         logger.info("Pull URLs from Google Sheet: {0} from range: {1} to Extractor: {2} and run".format(
-            self._spread_sheet_id, self._range, self._extractor_id))
+            self._spread_sheet_id, self._spread_sheet_range, self._extractor_id))
 
         self._copy_urls()
         self._extractor_start()
@@ -232,8 +250,8 @@ class NewsDriver(object):
         :return:
         """
         logger.info("Display URLs from Google Sheet: {0} from range: {1}".format(
-            self._spread_sheet_id, self._range))
-        sheet = GoogleSheet(spreadsheet_id=self._spread_sheet_id, range=self._range)
+            self._spread_sheet_id, self._spread_sheet_range))
+        sheet = GoogleSheet(spreadsheet_id=self._spread_sheet_id, range=self._spread_sheet_range)
         sheet.initialize_service()
         urls = sheet.get_urls()
         for url in urls:
