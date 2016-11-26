@@ -62,10 +62,15 @@ class NewsDriver(object):
         extractor.put(urls)
 
     def extract(self, spread_sheet_id, spread_sheet_range, extractor_id):
-        pass
+        logger.info("Pull URLs from Google Sheet: {0} from range: {1} to Extractor: {2} and run".format(
+            spread_sheet_id, spread_sheet_range, extractor_id))
+        self.copy_urls(spread_sheet_id, spread_sheet_range, extractor_id)
+        self.extractor_start(extractor_id)
 
     def extractor_start(self, extractor_id):
-        pass
+        logger.info("Starting crawl run for extractor: {0}".format(extractor_id))
+        extractor = ExtractorStart(extractor_id=extractor_id)
+        extractor.start()
 
     def extractor_status(self, extractor_id):
         pass
@@ -140,6 +145,7 @@ class NewsDriver(object):
         self._add_debug_argument(extract)
         self._add_extractor_id_argument(extract)
         self._add_spread_sheet_id_argument(extract)
+        self._add_range_argument(extract)
         extract.set_defaults(which=CMD_EXTRACT)
 
         #
@@ -205,20 +211,14 @@ class NewsDriver(object):
         specified Extractor and then run the Extractor
         :return:
         """
-        logger.info("Pull URLs from Google Sheet: {0} from range: {1} to Extractor: {2} and run".format(
-            self._spread_sheet_id, self._spread_sheet_range, self._extractor_id))
-
-        self._copy_urls()
-        self._extractor_start()
+        self.extract(self._spread_sheet_id, self._spread_sheet_range, self._extractor_id)
 
     def _extractor_start(self):
         """
         Stars an extractor craw run from the provide extractor id
         :return:
         """
-        logger.info("Starting crawl run for extractor: {0}".format(self._extractor_id))
-        extractor = ExtractorStart(extractor_id=self._extractor_id)
-        extractor.start()
+        self.extractor_start(self._extractor_id)
 
     def _extractor_status(self):
         """
