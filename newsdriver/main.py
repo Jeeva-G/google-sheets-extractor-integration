@@ -78,7 +78,9 @@ class NewsDriver(object):
         return extractor.get()
 
     def extractor_urls(self, extractor_id):
-        pass
+        logger.info("Display URLs from Extractor: {0}".format(self._extractor_id))
+        api = ExtractorGetUrlList(extractor_id=self._extractor_id)
+        return api.get()
 
     def sheet_urls(self, spread_sheet_id, spread_sheet_range):
         pass
@@ -238,9 +240,7 @@ class NewsDriver(object):
         Display the URLs associated with the given extractor
         :return: None
         """
-        logger.info("Display URLs from Extractor: {0}".format(self._extractor_id))
-        api = ExtractorGetUrlList(extractor_id=self._extractor_id)
-        urls = api.get()
+        urls = self.extractor_urls(self._extractor_id)
         for url in urls:
             print(url)
 
