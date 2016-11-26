@@ -86,22 +86,22 @@ class NewsDriver(object):
         :param spread_sheet_id: Google sheet identifier
         :param spread_sheet_range: Absolute or relative spread sheet range that locates
         :param extractor_id: Identifies the Extractor to copy URLs to and execute
-        :return: None
+        :return: Status of the crawl run and GUID
         """
         logger.info("Pull URLs from Google Sheet: {0} from range: {1} to Extractor: {2} and run".format(
             spread_sheet_id, spread_sheet_range, extractor_id))
         self.copy_urls(spread_sheet_id, spread_sheet_range, extractor_id)
-        self.extractor_start(extractor_id)
+        return self.extractor_start(extractor_id)
 
     def extractor_start(self, extractor_id):
         """
         Starts a crawl run for an Extractor
-        :param extractor_id: Identies the extractor to start a craw run for
-        :return: None
+        :param extractor_id: Identifies the extractor to start a craw run for
+        :return: Status of the crawl run and GUID
         """
         logger.info("Starting crawl run for extractor: {0}".format(extractor_id))
         extractor = ExtractorStart(extractor_id=extractor_id)
-        extractor.start()
+        return extractor.start()
 
     def extractor_status(self, extractor_id):
         """
@@ -184,7 +184,7 @@ class NewsDriver(object):
         logger.info("Process command line arguments")
 
         parser = argparse.ArgumentParser(description=DESCRIPTION)
-        parser.add_argument('--version', action='version',
+        parser.add_argument('-v', '--version', action='version',
                             version='{version}'.format(version=__version__))
         subparser = parser.add_subparsers(help='commands')
         #
@@ -277,7 +277,8 @@ class NewsDriver(object):
         Stars an extractor craw run from the provide extractor id
         :return:
         """
-        self.extractor_start(self._extractor_id)
+        crawl_run_id = self.extractor_start(self._extractor_id)
+        print("craw run id: {0}".format(crawl_run_id))
 
     def _extractor_status(self):
         """
