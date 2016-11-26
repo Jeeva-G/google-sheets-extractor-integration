@@ -73,7 +73,9 @@ class NewsDriver(object):
         extractor.start()
 
     def extractor_status(self, extractor_id):
-        pass
+        logger.info("Status for extractor: {0}".format(extractor_id))
+        extractor = ExtractorStatus(extractor_id=extractor_id)
+        return extractor.get()
 
     def extractor_urls(self, extractor_id):
         pass
@@ -225,9 +227,7 @@ class NewsDriver(object):
         Displays the crawl runs of an extractor
         :return:
         """
-        logger.info("Status for extractor: {0}".format(self._extractor_id))
-        extractor = ExtractorStatus(extractor_id=self._extractor_id)
-        status = extractor.get()
+        status = self.extractor_status(self._extractor_id)
         for s in status:
             print("guid: {0}, state: {1}, rows: {2}, total_urls: {3}, success_urls: {4}, failed_urls: {5}".format(
                     s['guid'], s['state'], s['rowCount'], s['totalUrlCount'], s['successUrlCount'],
