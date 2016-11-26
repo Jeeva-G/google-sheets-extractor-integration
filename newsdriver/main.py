@@ -263,8 +263,9 @@ class NewsDriver(object):
         Copies URLs from a Google sheet to a Extractor URL list
         :return:
         """
-        rc = None
+        rc = 0
         self.copy_urls(self._spread_sheet_id, self._spread_sheet_range, self._extractor_id)
+        return rc
 
     def _extract(self):
         """
@@ -272,8 +273,9 @@ class NewsDriver(object):
         specified Extractor and then run the Extractor
         :return:
         """
-        rc = None
+        rc = 0
         self.extract(self._spread_sheet_id, self._spread_sheet_range, self._extractor_id)
+        rc = 0
 
     def _extractor_start(self):
         """
@@ -295,32 +297,35 @@ class NewsDriver(object):
         Displays the crawl runs of an extractor
         :return:
         """
-        rc = None
+        rc = 0
         status = self.extractor_status(self._extractor_id)
         for s in status:
             print("guid: {0}, state: {1}, rows: {2}, total_urls: {3}, success_urls: {4}, failed_urls: {5}".format(
                     s['guid'], s['state'], s['rowCount'], s['totalUrlCount'], s['successUrlCount'],
                 s['failedUrlCount']))
+        return rc
 
     def _extractor_urls(self):
         """
         Display the URLs associated with the given extractor
         :return: None
         """
-        rc = None
+        rc = 0
         urls = self.extractor_urls(self._extractor_id)
         for url in urls:
             print(url)
+        return rc
 
     def _sheet_urls(self):
         """
         Display the URLs associated with the given Google Sheet and range
         :return:
         """
-        rc = None
+        rc = 0
         urls = self.sheet_urls(self._spread_sheet_id, self._spread_sheet_range)
         for url in urls:
             print(url)
+        return rc
 
     def _dispatch_sub_command(self):
         """
