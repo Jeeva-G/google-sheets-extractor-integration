@@ -36,14 +36,25 @@ logger = logging.getLogger(__name__)
 
 class NewsDriver(object):
     """
-    Implements command line utility the encompasses the extraction requirements for NewsDriver which includes:
+    Implements command line utility and API that encompasses the extraction requirements for NewsDriver which includes:
 
     1. Extract the target URLs from a Google Spreadsheet
     2. Add the extracted URLs to the Extractor
     3. Execute the Extractor
+
+    Programmatic access to the commands are available, with an example shown here:
+
+    from newsdriver import NewsDriver
+
+    newsdriver = NewsDriver()
+    newsdrver.extractor_start(extractor_id)
+
     """
 
     def __init__(self):
+        """
+        Initializes a NewsDriver instance
+        """
         self._version = __version__
         self._debug = False
         self._command = None
@@ -52,6 +63,13 @@ class NewsDriver(object):
         self._spread_sheet_range = None
 
     def copy_urls(self, spread_sheet_id, spread_sheet_range, extractor_id):
+        """
+        Copies URLs from a Google sheet to an Extractor
+        :param spread_sheet_id: Google Sheet Identifier
+        :param spread_sheet_range: Absolute or relative spread sheet range that locates the URLs on the sheet
+        :param extractor_id: Identifies the target Extractor to copy URLs to
+        :return: None
+        """
         logger.info("Copy URLs from Google Sheet: {0} from range: {1} to Extractor: {2}".format(
             spread_sheet_id, spread_sheet_range, extractor_id))
         sheet = GoogleSheet(spreadsheet_id=spread_sheet_id, range=spread_sheet_range)
@@ -62,27 +80,56 @@ class NewsDriver(object):
         extractor.put(urls)
 
     def extract(self, spread_sheet_id, spread_sheet_range, extractor_id):
+        """
+        Performs the entire copy of URLs from the Google sheet to Extractor and starts a craw run
+
+        :param spread_sheet_id: Google sheet identifier
+        :param spread_sheet_range: Absolute or relative spread sheet range that locates
+        :param extractor_id: Identifies the Extractor to copy URLs to and execute
+        :return: None
+        """
         logger.info("Pull URLs from Google Sheet: {0} from range: {1} to Extractor: {2} and run".format(
             spread_sheet_id, spread_sheet_range, extractor_id))
         self.copy_urls(spread_sheet_id, spread_sheet_range, extractor_id)
         self.extractor_start(extractor_id)
 
     def extractor_start(self, extractor_id):
+        """
+        Starts a crawl run for an Extractor
+        :param extractor_id: Identies the extractor to start a craw run for
+        :return: None
+        """
         logger.info("Starting crawl run for extractor: {0}".format(extractor_id))
         extractor = ExtractorStart(extractor_id=extractor_id)
         extractor.start()
 
     def extractor_status(self, extractor_id):
+        """
+        Returns the crawl-run status for the specific extractor
+        :param extractor_id: Identifies the extractor to get the crawl runs from
+        :return: A list of crawl-run dictionaries that contains status information
+        """
         logger.info("Status for extractor: {0}".format(extractor_id))
         extractor = ExtractorStatus(extractor_id=extractor_id)
         return extractor.get()
 
     def extractor_urls(self, extractor_id):
+        """
+        Returns list of URLs associated with a specific extractor
+        :param extractor_id: Identifies the extractor to pull the URLs for
+        :return: A list of strings contains URLs
+        """
         logger.info("Display URLs from Extractor: {0}".format(extractor_id))
         api = ExtractorGetUrlList(extractor_id=extractor_id)
         return api.get()
 
     def sheet_urls(self, spread_sheet_id, spread_sheet_range):
+        """
+        Returns a list of URLs associated with a Google sheet and a specified range
+        :param spread_sheet_id: Google Sheet identifier
+        :param spread_sheet_range: Specific range that contains the URLs
+        :return:
+        """
         logger.info("Display URLs from Google Sheet: {0} from range: {1}".format(
             spread_sheet_id, spread_sheet_range))
         sheet = GoogleSheet(spreadsheet_id=spread_sheet_id, range=spread_sheet_range)
@@ -93,7 +140,7 @@ class NewsDriver(object):
         """
         Add extractor id argument
         :param parser: Parser to add argument to
-        :return:
+        :return: None
         """
         parser.add_argument('-e', '--extractor-id', metavar='extractor_id',
                             dest="extractor_id", action='store', required=True,
@@ -112,24 +159,26 @@ class NewsDriver(object):
         """
         Add spread sheet id argument to a parser
         :param parser: Parser to add the argument to
-        :return:
+        :return: None
         """
-        parser.add_argument('-i', '--sheet-id', dest="spread_sheet_id", action='store', required=True,
+        parser.add_argument('-i', '--sheet-id', dest="spread_sheet_id", metavar='spread_sheet_id',
+                            action='store', required=True,
                             help="Google spreadsheet identifier")
 
     def _add_range_argument(self, parser):
         """
         Add spread sheet range to a parser
         :param parser:
-        :return:
+        :return: None
         """
-        parser.add_argument('-r', '--range', dest="range", action='store', required=False,
+        parser.add_argument('-r', '--range', dest="spread_sheet_range", metavar='spread_sheet_range',
+                            action='store', required=False,
                             help="Range identifying the list of URLs")
 
     def _handle_arguments(self):
         """
         Processes the command line arguments for each of the sub-commands
-        :return:
+        :return: None
         """
 
         logger.info("Process command line arguments")
@@ -186,7 +235,7 @@ class NewsDriver(object):
         sheet_urls = subparser.add_parser(CMD_SHEET_URLS, help='Displays the URLs from a google sheet')
         self._add_debug_argument(sheet_urls)
         self._add_spread_sheet_id_argument(sheet_urls)
-        sheet_urls.add_argument('-r', '--range', dest="range", action='store', required=False)
+        self._add_range_argument(sheet_urls)
         sheet_urls.set_defaults(which=CMD_SHEET_URLS)
 
         args = parser.parse_args()
@@ -200,8 +249,8 @@ class NewsDriver(object):
         if 'spread_sheet_id' in args:
             self._spread_sheet_id = args.spread_sheet_id
 
-        if 'range' in args:
-            self._spread_sheet_range = args.range
+        if 'spread_sheet_range' in args:
+            self._spread_sheet_range = args.spread_sheet_range
 
         if 'debug' in args:
             self._debug = args.debug
