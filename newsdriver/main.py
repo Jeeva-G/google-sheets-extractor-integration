@@ -78,12 +78,16 @@ class NewsDriver(object):
         return extractor.get()
 
     def extractor_urls(self, extractor_id):
-        logger.info("Display URLs from Extractor: {0}".format(self._extractor_id))
-        api = ExtractorGetUrlList(extractor_id=self._extractor_id)
+        logger.info("Display URLs from Extractor: {0}".format(extractor_id))
+        api = ExtractorGetUrlList(extractor_id=extractor_id)
         return api.get()
 
     def sheet_urls(self, spread_sheet_id, spread_sheet_range):
-        pass
+        logger.info("Display URLs from Google Sheet: {0} from range: {1}".format(
+            spread_sheet_id, spread_sheet_range))
+        sheet = GoogleSheet(spreadsheet_id=spread_sheet_id, range=spread_sheet_range)
+        sheet.initialize_service()
+        return sheet.get_urls()
 
     def _add_extractor_id_argument(self, parser):
         """
@@ -249,11 +253,7 @@ class NewsDriver(object):
         Display the URLs associated with the given Google Sheet and range
         :return:
         """
-        logger.info("Display URLs from Google Sheet: {0} from range: {1}".format(
-            self._spread_sheet_id, self._spread_sheet_range))
-        sheet = GoogleSheet(spreadsheet_id=self._spread_sheet_id, range=self._spread_sheet_range)
-        sheet.initialize_service()
-        urls = sheet.get_urls()
+        urls = self.sheet_urls(self._spread_sheet_id, self._spread_sheet_range)
         for url in urls:
             print(url)
 
