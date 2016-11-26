@@ -21,6 +21,7 @@ from newsdriver import ExtractorPutUrlList
 from newsdriver import ExtractorStart
 from newsdriver import ExtractorStatus
 import logging
+import sys
 
 CMD_COPY_URLS = 'copy-urls'
 CMD_EXTRACT = 'extract'
@@ -262,6 +263,7 @@ class NewsDriver(object):
         Copies URLs from a Google sheet to a Extractor URL list
         :return:
         """
+        rc = None
         self.copy_urls(self._spread_sheet_id, self._spread_sheet_range, self._extractor_id)
 
     def _extract(self):
@@ -270,6 +272,7 @@ class NewsDriver(object):
         specified Extractor and then run the Extractor
         :return:
         """
+        rc = None
         self.extract(self._spread_sheet_id, self._spread_sheet_range, self._extractor_id)
 
     def _extractor_start(self):
@@ -277,14 +280,22 @@ class NewsDriver(object):
         Stars an extractor craw run from the provide extractor id
         :return:
         """
-        crawl_run_id = self.extractor_start(self._extractor_id)
-        print("craw run id: {0}".format(crawl_run_id))
+        rc = None
+        result = self.extractor_start(self._extractor_id)
+        if 'error' in result:
+            print(result['error'])
+            rc = 1
+        else:
+            print("craw run id: {0}".format(result))
+            rc = 0
+        return rc
 
     def _extractor_status(self):
         """
         Displays the crawl runs of an extractor
         :return:
         """
+        rc = None
         status = self.extractor_status(self._extractor_id)
         for s in status:
             print("guid: {0}, state: {1}, rows: {2}, total_urls: {3}, success_urls: {4}, failed_urls: {5}".format(
@@ -296,6 +307,7 @@ class NewsDriver(object):
         Display the URLs associated with the given extractor
         :return: None
         """
+        rc = None
         urls = self.extractor_urls(self._extractor_id)
         for url in urls:
             print(url)
@@ -305,6 +317,7 @@ class NewsDriver(object):
         Display the URLs associated with the given Google Sheet and range
         :return:
         """
+        rc = None
         urls = self.sheet_urls(self._spread_sheet_id, self._spread_sheet_range)
         for url in urls:
             print(url)
@@ -314,6 +327,8 @@ class NewsDriver(object):
         Dispatch sub-command based on command line arguments
         :return:
         """
+        return_code = None
+
         if self._debug:
             logging.basicConfig(level=logging.DEBUG)
         else:
@@ -321,17 +336,19 @@ class NewsDriver(object):
         logger.info("Running command: {0}".format(self._command))
 
         if self._command == CMD_COPY_URLS:
-            self._copy_urls()
+            return_code = self._copy_urls()
         elif self._command == CMD_EXTRACT:
-            self._extract()
+            return_code = self._extract()
         elif self._command == CMD_EXTRACTOR_START:
-            self._extractor_start()
+            return_code = self._extractor_start()
         elif self._command == CMD_EXTRACTOR_STATUS:
-            self._extractor_status()
+            return_code = self._extractor_status()
         elif self._command == CMD_EXTRACTOR_URLS:
-            self._extractor_urls()
+            return_code = self._extractor_urls()
         elif self._command == CMD_SHEET_URLS:
-            self._sheet_urls()
+            return_code = self._sheet_urls()
+
+        sys.exit(return_code)
 
     def execute(self):
         """

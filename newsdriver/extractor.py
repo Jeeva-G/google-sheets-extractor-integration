@@ -129,8 +129,12 @@ class ExtractorStart(Extractor):
         }
 
         response = requests.request("POST", url, headers=headers, params=querystring)
-        result = response.json()
-        return result['crawlRunId']
+
+        if response.status_code == requests.codes.ok:
+            result = response.json()['crawlRunId']
+        else:
+            result = response.json()
+        return result
 
 
 class ExtractorStatus(Extractor):
