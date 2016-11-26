@@ -184,6 +184,8 @@ class NewsDriver(object):
         logger.info("Process command line arguments")
 
         parser = argparse.ArgumentParser(description=DESCRIPTION)
+        parser.add_argument('--version', action='version',
+                            version='{version}'.format(version=__version__))
         subparser = parser.add_subparsers(help='commands')
         #
         # COPY URLS
