@@ -52,7 +52,14 @@ class NewsDriver(object):
         self._spread_sheet_range = None
 
     def copy_urls(self, spread_sheet_id, spread_sheet_range, extractor_id):
-        pass
+        logger.info("Copy URLs from Google Sheet: {0} from range: {1} to Extractor: {2}".format(
+            spread_sheet_id, spread_sheet_range, extractor_id))
+        sheet = GoogleSheet(spreadsheet_id=spread_sheet_id, range=spread_sheet_range)
+        sheet.initialize_service()
+        urls = sheet.get_urls()
+        logger.debug("sheet-urls ({0}): {1}".format(type(urls), urls))
+        extractor = ExtractorPutUrlList(extractor_id=extractor_id)
+        extractor.put(urls)
 
     def extract(self, spread_sheet_id, spread_sheet_range, extractor_id):
         pass
@@ -190,14 +197,7 @@ class NewsDriver(object):
         Copies URLs from a Google sheet to a Extractor URL list
         :return:
         """
-        logger.info("Copy URLs from Google Sheet: {0} from range: {1} to Extractor: {2}".format(
-            self._spread_sheet_id, self._spread_sheet_range, self._extractor_id))
-        sheet = GoogleSheet(spreadsheet_id=self._spread_sheet_id, range=self._spread_sheet_range)
-        sheet.initialize_service()
-        urls = sheet.get_urls()
-        logger.debug("sheet-urls ({0}): {1}".format(type(urls), urls))
-        extractor = ExtractorPutUrlList(extractor_id=self._extractor_id)
-        extractor.put(urls)
+        self.copy_urls(self._spread_sheet_id, self._spread_sheet_range, self._extractor_id)
 
     def _extract(self):
         """
