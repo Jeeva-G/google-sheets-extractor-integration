@@ -14,9 +14,9 @@
 # limitations under the License.
 #
 
-from newsdriver.google import GoogleSheet
-from newsdriver.extractor import ExtractorGet
-from newsdriver.extractor import ExtractorGetUrlList
-from newsdriver.extractor import ExtractorPutUrlList
-from newsdriver.extractor import ExtractorStart
-from newsdriver.extractor import ExtractorStatus
+from importio_gsei.google import GoogleSheet
+from importio_gsei.extractor import ExtractorGet
+from importio_gsei.extractor import ExtractorGetUrlList
+from importio_gsei.extractor import ExtractorPutUrlList
+from importio_gsei.extractor import ExtractorStart
+from importio_gsei.extractor import ExtractorStatus

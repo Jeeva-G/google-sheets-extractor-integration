@@ -14,12 +14,12 @@
 # limitations under the License.
 #
 import argparse
-from newsdriver.version import __version__
-from newsdriver import GoogleSheet
-from newsdriver import ExtractorGetUrlList
-from newsdriver import ExtractorPutUrlList
-from newsdriver import ExtractorStart
-from newsdriver import ExtractorStatus
+from importio_gsei.version import __version__
+from importio_gsei import GoogleSheet
+from importio_gsei import ExtractorGetUrlList
+from importio_gsei import ExtractorPutUrlList
+from importio_gsei import ExtractorStart
+from importio_gsei import ExtractorStatus
 import logging
 import sys
 
@@ -30,14 +30,14 @@ CMD_EXTRACTOR_STATUS = 'extractor-status'
 CMD_EXTRACTOR_URLS = 'extractor-urls'
 CMD_SHEET_URLS = 'sheet-urls'
 
-DESCRIPTION = "Web Extractor for News Driver"
+DESCRIPTION = "Import.io Google Sheets Extractor Integration"
 
 logger = logging.getLogger(__name__)
 
 
-class NewsDriver(object):
+class GsExtractorUrls(object):
     """
-    Implements command line utility and API that encompasses the extraction requirements for NewsDriver which includes:
+    Implements command line utility and API:
 
     1. Extract the target URLs from a Google Spreadsheet
     2. Add the extracted URLs to the Extractor
@@ -45,10 +45,10 @@ class NewsDriver(object):
 
     Programmatic access to the commands are available, with an example shown here:
 
-    from newsdriver import NewsDriver
+    from importio_gsei import GsUrlFeed
 
-    newsdriver = NewsDriver()
-    newsdrver.extractor_start(extractor_id)
+    g = GsExtractorUrls()
+    g.extractor_start(extractor_id)
 
     """
 
@@ -369,8 +369,8 @@ def main():
     Main entry point for command line tool
     :return:
     """
-    ns = NewsDriver()
-    ns.execute()
+    g = GsExtractorUrls()
+    g.execute()
 
 
 if __name__ == '__main__':

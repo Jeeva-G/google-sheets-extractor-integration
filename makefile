@@ -1,5 +1,6 @@
-PACKAGE=newsdriver
-VERSION=$(shell python -c "from newsdriver.version import __version__ ; print(__version__)")
+PACKAGE=$(shell dirname `find . -depth 2 -name "version.py" -print` | tr -d './')
+PACKAGE_NAME=$(shell echo "$(PACKAGE)" | tr '_' '-')
+VERSION=$(shell python -c "from $(PACKAGE).version import __version__ ; print(__version__)")
 TAR_FILE=dist/$(PACKAGE)-$(VERSION).tar.gz
 
 %.pdf: %.md $(DEPS)
@@ -40,5 +41,5 @@ upload:
 	
 clean:
 	/bin/rm -rf build dist site MANIFEST
-	pip freeze | grep "$(PACKAGE)==$(VERSION)" && pip uninstall -y $(PACKAGE)
+	pip freeze | grep "$(PACKAGE_NAME)==$(VERSION)" && pip uninstall -y $(PACKAGE)
 	$(RM) $(TARGETS)
