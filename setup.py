@@ -11,6 +11,7 @@ setup(
     author='David Gwartney',
     author_email='david.gwartney@import.io',
     packages=['importio_gsei', ],
+    license='LICENSE',
     entry_points={
         'console_scripts': [
             'gsextractor = importio_gsei.main:main',
