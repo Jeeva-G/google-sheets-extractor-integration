@@ -1,4 +1,4 @@
-# Google Sheets Extractor Integration
+# Import.io Google Sheets Extractor Integration
 
 This repository includes a script solution that uses URLs taken from a Google sheet
 and copies to an existing Import.io Extractor, then lastly executes the Extractor
