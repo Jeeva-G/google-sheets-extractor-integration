@@ -16,6 +16,14 @@ third-party packages that can be installed using [pip](https://pip.pypa.io/en/st
 $ pip install importio_gsei
 ```
 
+## Configuration
+
+The Import.io API needs to be made available via an environment variable that can be configured as follows:
+
+```
+$ export IMPORT_IO_API_KEY=<api key>
+```
+
 ## Operation
 
 The command has 6 different sub-commands that are invoked similiarly as follows:
