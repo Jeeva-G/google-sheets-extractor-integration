@@ -24,15 +24,6 @@ from oauth2client import client
 from oauth2client import tools
 
 
-# TODO: Add test to indicate version 2.7.X or 3.X version of python
-#try:
-#    import argparse
-#    flags = argparse.ArgumentParser(parents=[tools.argparser]).parse_args()
-#    print(flags)
-#except ImportError:
-#    flags = None
-
-
 # If modifying these scopes, delete your previously saved credentials
 # at ~/.credentials/sheets.googleapis.com-python-quickstart.json
 SCOPES = 'https://www.googleapis.com/auth/spreadsheets.readonly'

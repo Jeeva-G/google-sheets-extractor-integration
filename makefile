@@ -1,5 +1,5 @@
-PACKAGE=newsdriver
-VERSION=$(shell python -c "from newsdriver.version import __version__ ; print(__version__)")
+PACKAGE=$(shell dirname `find . -depth 2 -name "version.py" -print` | tr -d './')
+VERSION=$(shell python -c "from $(PACKAGE).version import __version__ ; print(__version__)")
 TAR_FILE=dist/$(PACKAGE)-$(VERSION).tar.gz
 
 %.pdf: %.md $(DEPS)
