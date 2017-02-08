@@ -5,7 +5,7 @@ from setuptools import setup
 
 setup(
     name='importio_gsei',
-    version='0.3.2',
+    version='0.4.0',
     url='http://github.io/import.io/google-sheets-extractor-integration',
     author='David Gwartney',
     author_email='david.gwartney@import.io',
