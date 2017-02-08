@@ -2,11 +2,10 @@
 Setup for Import.io Google Sheet Extractor Integration
 """
 from setuptools import setup
-from importio_gsei.version import __version__
 
 setup(
     name='importio_gsei',
-    version=__version__,
+    version='0.3.1',
     url='http://github.io/import.io/google-sheets-extractor-integration',
     author='David Gwartney',
     author_email='david.gwartney@import.io',
