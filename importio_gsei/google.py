@@ -16,8 +16,6 @@
 
 import httplib2
 import os
-import argparse
-
 from apiclient import discovery
 import oauth2client
 from oauth2client import client
@@ -27,18 +25,36 @@ from oauth2client import tools
 # If modifying these scopes, delete your previously saved credentials
 # at ~/.credentials/sheets.googleapis.com-python-quickstart.json
 SCOPES = 'https://www.googleapis.com/auth/spreadsheets.readonly'
-CLIENT_SECRET_FILE = 'client_secret.json'
-APPLICATION_NAME = 'Google Sheets Python Quickstart'
+CREDENTIALS_FILE_NAME = 'sheets.googleapis.com-python-quickstart.json'
 
-DEFAULT_RANGE = 'Sheet1!$A:A'
+try:
+    import argparse
+    flags = argparse.ArgumentParser(parents=[tools.argparser]).parse_args([])
+except ImportError:
+    flags = None
 
 
 class GoogleSheet(object):
 
-    def __init__(self, spreadsheet_id, range=DEFAULT_RANGE):
-        self._spreadsheet_id = spreadsheet_id
+    def __init__(self):
         self._service = None
         self._range = range
+
+    def authorize(self, application_name, client_secret_path):
+        credential_path = self.credential_path()
+        store = oauth2client.file.Storage(credential_path)
+        flow = client.flow_from_clientsecrets(client_secret_path, SCOPES)
+        flow.user_agent = application_name
+        credentials = tools.run_flow(flow, store, flags)
+        print('Storing credentials to ' + credential_path)
+
+    def credential_path(self):
+        home_dir = os.path.expanduser('~')
+        credential_dir = os.path.join(home_dir, '.credentials')
+        if not os.path.exists(credential_dir):
+            os.makedirs(credential_dir)
+        credential_path = os.path.join(credential_dir, CREDENTIALS_FILE_NAME)
+        return credential_path
 
     def get_credentials(self):
         """Gets valid user credentials from storage.
@@ -49,23 +65,9 @@ class GoogleSheet(object):
         Returns:
             Credentials, the obtained credential.
         """
-        home_dir = os.path.expanduser('~')
-        credential_dir = os.path.join(home_dir, '.credentials')
-        if not os.path.exists(credential_dir):
-            os.makedirs(credential_dir)
-        credential_path = os.path.join(credential_dir,
-                                       'sheets.googleapis.com-python-quickstart.json')
-
+        credential_path = self.credential_path()
         store = oauth2client.file.Storage(credential_path)
         credentials = store.get()
-        if not credentials or credentials.invalid:
-            flow = client.flow_from_clientsecrets(CLIENT_SECRET_FILE, SCOPES)
-            flow.user_agent = APPLICATION_NAME
-            if flags:
-                credentials = tools.run_flow(flow, store, flags)
-            else:  # Needed only for compatibility with Python 2.6
-                credentials = tools.run(flow, store)
-            print('Storing credentials to ' + credential_path)
         return credentials
 
     def initialize_service(self):
@@ -75,9 +77,9 @@ class GoogleSheet(object):
                         'version=v4')
         self._service = discovery.build('sheets', 'v4', http=http, discoveryServiceUrl=discovery_url)
 
-    def get_urls(self):
-        result = self._service.spreadsheets().values().get(spreadsheetId=self._spreadsheet_id,
-                                                           range=self._range).execute()
+    def get_urls(self, spreadsheet_id, sheet_range):
+        result = self._service.spreadsheets().values().get(spreadsheetId=spreadsheet_id,
+                                                           range=sheet_range).execute()
         values = result.get('values', [])
         urls = []
         for v in values:

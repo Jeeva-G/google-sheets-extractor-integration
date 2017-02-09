@@ -2,11 +2,21 @@
 Setup for Import.io Google Sheet Extractor Integration
 """
 from setuptools import setup
-from importio_gsei.version import __version__
+import re
+
+PACKAGE = 'importio_gsei'
+VERSION_FILE = "importio_gsei/version.py"
+verstrline = open(VERSION_FILE, "rt").read()
+VSRE = r"^__version__ = ['\"]([^'\"]*)['\"]"
+mo = re.search(VSRE, verstrline, re.M)
+if mo:
+    version = mo.group(1)
+else:
+    raise RuntimeError("Unable to find version string in %s." % (VERSION_FILE,))
 
 setup(
     name='importio_gsei',
-    version=__version__,
+    version=version,
     url='http://github.io/import.io/google-sheets-extractor-integration',
     author='David Gwartney',
     author_email='david.gwartney@import.io',
