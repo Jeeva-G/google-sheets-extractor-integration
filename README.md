@@ -18,15 +18,61 @@ $ pip install importio_gsei
 
 ## Configuration
 
+Before the integration can be used you need to setup the Google Sheets API and Import.io key.
+
+### Import.io Authentication
+
 The Import.io API needs to be made available via an environment variable that can be configured as follows:
 
 ```
 $ export IMPORT_IO_API_KEY=<api key>
 ```
 
+### Google Sheets API Setup
+
+#### Generate Credentials
+
+**NOTE**: You must have Google Account to use the Google Sheets API, you can sign up [here](https://accounts.google.com/SignUp?hl=en).
+
+1. Use this [wizard](https://console.developers.google.com/start/api?id=sheets.googleapis.com)
+to create or select a project in the Google Developers Console and automatically turn on the API. Click **Continue**, then **Go to credentials**.
+
+2. On the **Add credentials to your project** page, click the Cancel button.
+
+3. At the top of the page, select the OAuth consent screen tab.
+
+4. Select an Email address, enter a Product name if not already set, and click the Save button.
+
+5. Select the **Credentials** tab, click the **Create credentials** button and select **OAuth client ID**.
+
+6. Select the application type **Other**, enter the name "Google Sheets Extractor Integration", and click the Create button.
+
+7. Click **OK** to dismiss the resulting dialog.
+
+8. Click the file_download (Download JSON) button to the right of the client ID.
+
+9. Move this file to a known directory on your computer and rename to `client-secret.json`
+
+#### Authorize Access
+
+1. Authorize access to the Google Sheets API by running the following command:
+
+    ```
+    $ gextractor authorize -f client-secret.json -a 'Google Sheets Extractor Integration'
+    ```
+
+2. This will launch a browser an display an authorization page:
+
+![Google Authorization Page](authorize.png "Google Authorization Page")
+
+3. Click on the **Allow** button.
+
+4. Close the browser window.
+
+
 ## Operation
 
-The command has 6 different sub-commands that are invoked similiarly as follows:
+The command has 7 different sub-commands that are invoked similiarly as follows:
 
 ```
 $ gsextractor <sub-command>
@@ -34,6 +80,7 @@ $ gsextractor <sub-command>
 
 where `sub-command` is one of the following:
 
+- _authorize_ - Performs the Oauth handshake to allow permit access to Google Sheets API
 - _copy-urls_ - Copies URLs from a specified Google sheet to designated Extractor.
 - _extractor-start_ - Initiates a crawl-run of an Extractor.
 - _extractor-status_ - Provides a status of the crawl-run(s) of an Extractor.
@@ -42,19 +89,20 @@ where `sub-command` is one of the following:
 sheet to running the Extractor to extract data from web pages.
 - _sheet-urls_ - Displays a list of the URLs in a Google sheet given the sheet id and range.
 
-Help can be displayed which shows the available sum-commands as follows:
+Help can be displayed which shows the available sub-commands as follows:
 
 ```
-$ gsextractor -h
+ gsextractor -h
 usage: gsextractor [-h] [-v]
-                  {copy-urls,extract,extractor-start,extractor-status,extractor-urls,sheet-urls}
-                  ...
+                   {authorize,copy-urls,extract,extractor-start,extractor-status,extractor-urls,sheet-urls}
+                   ...
 
-Google Sheets URL Feed
+Import.io Google Sheets Extractor Integration
 
 positional arguments:
-  {copy-urls,extract,extractor-start,extractor-status,extractor-urls,sheet-urls}
+  {authorize,copy-urls,extract,extractor-start,extractor-status,extractor-urls,sheet-urls}
                         commands
+    authorize           Configures authentication Google Sheets API
     copy-urls           Copies URLs from google sheet to an extractor
     extract             Runs the full extraction process
     extractor-start     Starts an extractor
@@ -77,7 +125,15 @@ The version of the program can be displayed by running the command with the `-v`
 
 ```
 $ gsextractor <sub-command> -v
-0.3.0
+0.4.0
+```
+
+### auth
+
+Configures OAuth
+
+```
+$ gsextractor auth -c <path to credentials file>
 ```
 
 ### copy-urls
@@ -87,6 +143,7 @@ Copy the URLs in the Google Sheet to the Extractor URLs
 ```
 $ gsextractor copy-urls -i <spreasdheet_id> -r <spreadsheet_range> -e <extractor_id>
 ```
+**NOTE**: _spreadsheet_range_ needs to be surrounded by single quotes to prevent a range of the
 
 ### extractor-start
 
