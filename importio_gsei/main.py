@@ -1,3 +1,4 @@
+#!/usr/bin/env python
 #
 # Copyright 2016 Import.io
 #
@@ -23,6 +24,7 @@ from importio_gsei import ExtractorStatus
 import logging
 import sys
 
+CMD_AUTHORIZE = 'authorize'
 CMD_COPY_URLS = 'copy-urls'
 CMD_EXTRACT = 'extract'
 CMD_EXTRACTOR_START = 'extractor-start'
@@ -56,12 +58,24 @@ class GsExtractorUrls(object):
         """
         Initializes a NewsDriver instance
         """
-        self._version = __version__
-        self._debug = False
         self._command = None
+        self._debug = False
+        self._file = None
         self._extractor_id = None
+        self._name = None
         self._spread_sheet_id = None
         self._spread_sheet_range = None
+        self._version = __version__
+
+    def authorize(self, application_name, path):
+        """
+        Performs the Oauth authentication with client_secret file
+        :param application_name: Name of the application
+        :param path: Path to client_secret file
+        :return: None
+        """
+        sheet = GoogleSheet()
+        sheet.authorize(application_name, path)
 
     def copy_urls(self, spread_sheet_id, spread_sheet_range, extractor_id):
         """
@@ -73,9 +87,9 @@ class GsExtractorUrls(object):
         """
         logger.info("Copy URLs from Google Sheet: {0} from range: {1} to Extractor: {2}".format(
             spread_sheet_id, spread_sheet_range, extractor_id))
-        sheet = GoogleSheet(spreadsheet_id=spread_sheet_id, range=spread_sheet_range)
+        sheet = GoogleSheet()
         sheet.initialize_service()
-        urls = sheet.get_urls()
+        urls = sheet.get_urls(spread_sheet_id, spread_sheet_range)
         logger.debug("sheet-urls ({0}): {1}".format(type(urls), urls))
         extractor = ExtractorPutUrlList(extractor_id=extractor_id)
         extractor.put(urls)
@@ -133,9 +147,9 @@ class GsExtractorUrls(object):
         """
         logger.info("Display URLs from Google Sheet: {0} from range: {1}".format(
             spread_sheet_id, spread_sheet_range))
-        sheet = GoogleSheet(spreadsheet_id=spread_sheet_id, range=spread_sheet_range)
+        sheet = GoogleSheet()
         sheet.initialize_service()
-        return sheet.get_urls()
+        return sheet.get_urls(spread_sheet_id, spread_sheet_range)
 
     def _add_extractor_id_argument(self, parser):
         """
@@ -176,6 +190,25 @@ class GsExtractorUrls(object):
                             action='store', required=False,
                             help="Range identifying the list of URLs")
 
+    def _add_file_argument(self, parser):
+        """
+        Add argument for client secret
+        :param parser:
+        :return: None
+        """
+        parser.add_argument('-f', '--file', dest="file", metavar='path',
+                            action='store', required=True, help="Path to client_secret file")
+
+    def _add_name_argument(self, parser):
+        """
+        Add argument for client secret
+        :param parser:
+        :return: None
+        """
+        parser.add_argument('-a', '--app-name', dest='name', metavar='name',
+                            action='store', required=True,
+                            help="Name of the application for Google Sheets API")
+
     def _handle_arguments(self):
         """
         Processes the command line arguments for each of the sub-commands
@@ -185,9 +218,18 @@ class GsExtractorUrls(object):
         logger.info("Process command line arguments")
 
         parser = argparse.ArgumentParser(description=DESCRIPTION)
-        parser.add_argument('-v', '--version', action='version',
-                            version='{version}'.format(version=__version__))
+        parser.add_argument('-v', '--version', action='version', version='{version}'.format(version=__version__))
         subparser = parser.add_subparsers(help='commands')
+
+        #
+        # AUTHORIZE
+        #
+        authorize = subparser.add_parser(CMD_AUTHORIZE, help='Configures authentication Google Sheets API')
+        self._add_debug_argument(authorize)
+        self._add_name_argument(authorize)
+        self._add_file_argument(authorize)
+        authorize.set_defaults(which=CMD_AUTHORIZE)
+
         #
         # COPY URLS
         #
@@ -258,6 +300,21 @@ class GsExtractorUrls(object):
         if 'debug' in args:
             self._debug = args.debug
 
+        if 'file' in args:
+            self._file = args.file
+
+        if 'name' in args:
+            self._name = args.name
+
+    def _authorize(self):
+        """
+        Configures client secret
+        :return: None
+        """
+        rc = 0
+        self.authorize(self._name, self._file)
+        return rc
+
     def _copy_urls(self):
         """
         Copies URLs from a Google sheet to a Extractor URL list
@@ -275,7 +332,7 @@ class GsExtractorUrls(object):
         """
         rc = 0
         self.extract(self._spread_sheet_id, self._spread_sheet_range, self._extractor_id)
-        rc = 0
+        return rc
 
     def _extractor_start(self):
         """
@@ -301,7 +358,7 @@ class GsExtractorUrls(object):
         status = self.extractor_status(self._extractor_id)
         for s in status:
             print("guid: {0}, state: {1}, rows: {2}, total_urls: {3}, success_urls: {4}, failed_urls: {5}".format(
-                    s['guid'], s['state'], s['rowCount'], s['totalUrlCount'], s['successUrlCount'],
+                s['guid'], s['state'], s['rowCount'], s['totalUrlCount'], s['successUrlCount'],
                 s['failedUrlCount']))
         return rc
 
@@ -340,7 +397,9 @@ class GsExtractorUrls(object):
             logging.basicConfig(level=logging.ERROR)
         logger.info("Running command: {0}".format(self._command))
 
-        if self._command == CMD_COPY_URLS:
+        if self._command == CMD_AUTHORIZE:
+            return_code = self._authorize()
+        elif self._command == CMD_COPY_URLS:
             return_code = self._copy_urls()
         elif self._command == CMD_EXTRACT:
             return_code = self._extract()
