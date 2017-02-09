@@ -32,10 +32,12 @@ $ export IMPORT_IO_API_KEY=<api key>
 
 #### Generate Credentials
 
-**NOTE**: You must have Google Account to use the Google Sheets API, you can sign up [here](https://accounts.google.com/SignUp?hl=en).
+**NOTE**: You must have Google Account to use the Google Sheets API, you can sign up
+[here](https://accounts.google.com/SignUp?hl=en).
 
 1. Use this [wizard](https://console.developers.google.com/start/api?id=sheets.googleapis.com)
-to create or select a project in the Google Developers Console and automatically turn on the API. Click **Continue**, then **Go to credentials**.
+to create or select a project in the Google Developers Console and automatically turn on the API. Click **Continue**,
+then **Go to credentials**.
 
 2. On the **Add credentials to your project** page, click the Cancel button.
 
@@ -61,14 +63,13 @@ to create or select a project in the Google Developers Console and automatically
     $ gextractor authorize -f client-secret.json -a 'Google Sheets Extractor Integration'
     ```
 
-2. This will launch a browser an display an authorization page:
-
-![Google Authorization Page](authorize.png "Google Authorization Page")
+2. This will launch a browser and display an authorization page (see below).
 
 3. Click on the **Allow** button.
 
 4. Close the browser window.
 
+![Google Authorization Page](authorize.png "Google Authorization Page")
 
 ## Operation
 
@@ -256,7 +257,6 @@ urls = g.extract(spread_sheet_id, spread_sheet_range)
 for url in urls:
     print(url)
 ```
-
 
 
 
