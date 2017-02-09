@@ -1,6 +1,6 @@
-PACKAGE=$(shell dirname `find . -depth 2 -name "version.py" -print` | tr -d './')
-PACKAGE_NAME=$(shell echo "$(PACKAGE)" | tr '_' '-')
-VERSION=$(shell python -c "from $(PACKAGE).version import __version__ ; print(__version__)")
+PACKAGE=importio_gsei
+PACKAGE_NAME=importio-gsei
+VERSION=0.4.0
 TAR_FILE=dist/$(PACKAGE)-$(VERSION).tar.gz
 
 %.pdf: %.md $(DEPS)
