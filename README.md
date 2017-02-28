@@ -60,7 +60,7 @@ then **Go to credentials**.
 1. Authorize access to the Google Sheets API by running the following command:
 
     ```
-    $ gextractor authorize -f client-secret.json -a 'Google Sheets Extractor Integration'
+    $ gsextractor authorize -f client-secret.json -a 'Google Sheets Extractor Integration'
     ```
 
 2. This will launch a browser and display an authorization page (see below).
